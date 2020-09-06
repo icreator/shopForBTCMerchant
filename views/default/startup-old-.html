@@ -1,0 +1,27 @@
+{{extend 'layout.html'}}
+<link rel="stylesheet" href="{{=URL('static','css/anim.css')}}">
+
+{{=H3(T('Start-Up или как получить шанс на богатство'))}}
+
+{{=T('Суть стартапа в создании международного платежного сервиса, по мощности равного такому монстру как PayPal.')}}<br>
+{{=T('Каких либо препятсвий для этого не существует, только мы сами - все зависит от НАС')}}<br>
+{{=T('Известно что деньги правят миром, а мы можем брать с них процент...')}}
+'Стартап запущен, теперь Вы можете' {{=A('вступить в него здесь', _href='http://ipo-polza.ru/')}}
+<div class="animated slideInDown">
+{{=H3(A(T('Описание стартапа "Платежная Империя"'),
+_href='https://docs.google.com/document/d/1aWurh9nHrZi8KK2AVXAOEH6aCYYbBN7nNmyq0foffYI/edit?usp=sharing',
+_target='_blank'))}}
+
+
+{{=H4(XML(A(T('Список участников'), _href=URL('startup_list')) + '. ' + \
+A(T('Вакансии стартапа'), _href=URL('vacs')) + '. ' + \
+A(T('Обсуждение'), _href='https://bitcointalk.org/index.php?topic=486412.0')  + '. ')
+    )}}
+
+{{=H4(T('Добавиться в стартап'))}}
+{{if response.flash:}}
+{{=H4(response.flash)}}
+{{pass}}
+{{=response._vars.get('ff')}}
+<br><br><br>
+</div>

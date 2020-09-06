@@ -1,0 +1,18 @@
+{{extend 'layout.html'}}
+<link rel="stylesheet" href="{{=URL('static','css/anim.css')}}">
+
+<h1>Start-Up или как получить шанс на богатство</h1>
+
+{{if response._vars.get('mess'):}}
+{{=H5(response._vars.get('mess'))}}
+{{pass}}
+    
+{{=H3('Стартап запущен!')}}
+теперь Вы можете {{=A('вступить в него здесь', _href='http://ipo-polza.ru/')}}
+
+<div class="animated bounceInUp">
+
+    {{=H5(T('Список участников'))}}
+    {{=response._vars.get('ll')}}
+<br><br><br>
+</div>

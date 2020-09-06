@@ -1,0 +1,59 @@
+{{right_sidebar_enabled=True}}
+{{block right_sidebar}}
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- probe1 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:120px;height:600px"
+     data-ad-client="ca-pub-8783966457918852"
+     data-ad-slot="2225738525"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+{{end}}
+
+{{extend 'layout.html'}}
+
+{{=H4(T('Где мои платежи?'))}}
+<br>{{=T('Вставьте адрес вашего платежа для поиска своих платежей или пусто для просмотра всех платежей сервису за последние сутки')}}:
+<form enctype="multipart/form-data" action="{{=URL('index')}}" method="post">
+    <br><input name="addr"
+            {{if addr:}}
+            value="{{=addr}}"
+            {{pass}}
+            class="wallet">
+    <input type='submit'
+            class='my_bu-tton lst_but-ton '
+            value='{{=T('Искать')}}'
+            size=6
+    >
+</form>
+
+{{#=BEAUTIFY(response._vars)}}
+{{#=BEAUTIFY(request.post_vars)}}
+{{if price and price > 0 and payed:}}
+{{amo_rest = price - payed}}
+{{ss=T('По заказу [%s] стоимостью %s, оплачено ') % (order_id, price)}}
+{{if amo_rest > 0:}}
+{{=ss + '%s' % (T(' %s, остаток %s') % (payed, amo_rest))}}<br>
+{{=amo_rest_url or ''}}
+{{else:}}
+{{=ss + '%s' % T('полностью.')}}<br>
+{{pass}}
+{{pass}}
+{{if payed_month:}}
+{{=T('Ваша месячная выплата:')}} {{=payed_month}} {{=T('рублей. При ограничении заказа в')}} {{=MAX}}  {{=T('рублей.')}}
+<BR>{{=T('Превышение ограничения добавляет небольшую комиссию за использование сервиса:')}}
+{{=T(' в 2 раза - 0,25%, в 3 раза - 0,5%, в 4 - 1%, в 5 и более раз - 2%.')}}
+{{pass}}
+{{if pays:}}
+{{=BEAUTIFY(pays)}}
+{{pass}}
+
+
+    <br>
+    <p>
+        <a href='https://bitcointalk.org/index.php?topic=307648.0' target="_blank">{{=T('Обсудить на форуме криптовалют')}}</a>
+    </p>
+    <p><b>{{=T('Еще:')}}</b>
+    {{=reclams}}
+    </p>

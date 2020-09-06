@@ -1,0 +1,11 @@
+{{extend 'layout.html'}}
+<link rel="stylesheet" href="{{=URL('static','css/anim.css')}}">
+
+<div class="right-full controls animated slideInDown">
+
+{{=H3(T('Список используемых валют'))}}
+{{#=BEAUTIFY(response._vars)}}
+{{=form}}
+{{#=response.toolbar()}}
+
+</div>

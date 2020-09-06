@@ -1,0 +1,10 @@
+<script type="text/javascript"><!--
+    // These variables are used by the web2py_ajax_init function in web2py_ajax.js (which is loaded below).
+    var w2p_ajax_disable_with_message = "{{=T('Работаю...')}}";
+    var ajax_error_500 = '{{=XML(T('Ошибка,  %s ') % A(T('перегрузить'), _href=URL(args=request.args, vars=request.get_vars))) }}'
+    //--></script>
+{{
+response.files.insert(0,URL('static','js/jquery.js'))
+response.files.insert(1,URL('static','js/web2py.js'))
+response.include_files()
+}}

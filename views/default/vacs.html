@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<link rel="stylesheet" href="{{=URL('static','css/anim.css')}}">
+
+{{=H5(A(T('к списоку участников'),_href=URL('default','startup_list')))}}
+
+{{=H4(T('Вакансии'))}}
+{{=T('Желаете работать в стартапе? Нам нужны работники - от управляющих и юристов до рекламщиков и менеждеров по продажам!')}}<br>
+
+{{=H3('Стартап запущен!')}}
+теперь Вы можете {{=A('вступить в него здесь', _href='http://ipo-polza.ru/')}}
+
+<div class="main animated slideInDown">
+</div>

@@ -1,0 +1,262 @@
+{{#extend 'layout.html'}}
+
+{{if response.vars:}}
+<link rel="shortcut icon" href="{{=URL('static','images/crPay2.ico')}}" type="image/x-icon">
+<link rel="apple-touch-icon" href="{{=URL('static','images/crPay2.png')}}">
+
+<style type="text/css">
+    body {
+        #background-color: #eeeef5;
+        background-color: #666;
+        #font: 12pt/14pt sans-serif;
+        #font: 8pt/12pt courier;
+        #font-family: Helvetica;
+        #font: 10pt/11pt Helvetica;
+        font-size: 18px;
+    }
+    .block1 {
+        width: 530px;
+        background: #eec;
+        padding: 15px 30px;
+        #padding-right: 10px;
+        #border: solid 1px black;
+        #float: middle;
+        #vertical-align: top;
+        #align: left;
+        #margin-left: 1em;
+    }
+    #xcurr_list {
+        background: #ddb;
+        padding: 10px 10px;
+        margin-top: 10px;
+    }
+    }
+    .border {
+        #border: solid 1px black;
+        margin-left: -2em;
+        padding: 10px;
+        #vertical-align: middle;
+    }
+    .pic1 {
+        vertical-align: top;
+        position: relative; /* Относительное позиционирование */
+        top: -5px;
+        #margin-top: 15px;
+        #padding: 5px 0px;
+    }
+    .ol1 {
+        margin-left: -2em;
+        padding: 5px 0px;
+    }
+    .ol3 {
+        background: #ffe;
+        position: relative; /* Относительное позиционирование */
+        #top: 0.5em; /* Смещаем слой вверх */
+        left: -0em; /* Сдвигаем слой вправо */
+        padding: 0px 0.5em;
+    }
+    .row_url {
+        vertical-align: top;
+        position: relative; /* Относительное позиционирование */
+        top: -1em; /* Смещаем слой вверх */
+    }
+    .row1 {
+        vertical-align: top;
+        position: relative; /* Относительное позиционирование */
+        top: 0.5em; /* Смещаем слой вверх */
+    }
+    .row2 {
+        vertical-align: top;
+        #position: relative; /* Относительное позиционирование */
+        #top: 0.5em; /* Смещаем слой вверх */
+    }
+    input[type="text"] {
+        border-radius: 15px;
+        padding: 4px 1em;
+        height: 2.5em;
+    }
+    {#vertical-align: baseline|bottom|middle|sub|super|text-bottom|text-top|top|inherit | значение | проценты}
+    input[type="submit"] {
+        vertical-align: top;
+        position: relative; /* Относительное позиционирование */
+        top: 0.2em; /* Смещаем слой вверх */
+        padding: 4px 1em;
+        height: 2.5em;
+    }
+    input.pay_xval {
+	    width: 8em;
+    }
+    input.email {
+	    width: 15em;
+    }
+</style>
+
+{{#=BUTTON('probe')}}
+{{vars=response.vars}}
+{{so=vars['shop_order']}}
+
+<BODY onload='recalc({{=vars.get("volume_out",1)}});'>
+    <div align="middle">
+    <div align="left" class="block1">
+        {{price = vars.get('price')
+        ou = '%s' % so.id
+        if so.secr: ou += '.%s' % so.secr
+        ou_u = URL('bill','show', args=[ou])
+        }}
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td valign="top" align="left" width="124">
+                        {{=A(IMG(_src=URL('static','images/logo1.png'), _width=120), _href=URL('default','home'), _target="blank")}}
+                    </td>
+                    <td valign="top" align="center" width="60%">
+                        {{=T('Оплата заказа')}}
+                        {{=A(T('%s') % (so.order_id), _href=ou_u)}}<br>
+                        {{if price:}}
+                        {{=T('на сумму ')}} {{=so.price}}
+                        {{else:}}
+                        {{=T('в валюте')}}
+                        {{pass}}
+                {{=IMG(_src=URL('default','download', args=['db', vars['curr_icon']]), _width=30, _height=30, _class='lst_icon')}}
+                    </td>
+                    <td valign="top" align="right" width="130">
+                        {{=T('для магазина:')}}<br>
+                        {{=vars.get('shop_url') or '?'}}
+                    </td>
+                </tr>
+            </table>
+        {{
+        bill_id = '%s' % so.id
+        if so.secr: bill_id += '.%s' % so.secr
+        }}
+        <form enctype="multipart/form-data" action="{{=URL('pay', args=[bill_id])}}" method="post">
+            {{if vars.get('shop_text'):}}{{=vars.get('shop_text')}}<br>{{pass}}
+            {{if so.get('mess'):}} {{=so.get('mess')}}<br>{{pass}}
+            <input type='hidden' name='xcurr_in' id='xcurr_in'>
+            {{if price:}}
+            {{if vars.get('closed'):}}
+            <br>
+            {{=T('Статус счета: %s') % vars.get('closed')}}<br>
+            {{else:}}
+            <div id='acc'>
+                {{#=T('Цена счета: %s') % (vars.get('price'))}}
+                {{#перегружаться будет постоянно если цена задана}}
+                {{=LOAD('bill', 'show_headers.load', args=[so.id],
+                    ajax=True, times=100, timeout=20000)}}
+            </div>
+            {{pass}}
+            {{else:}}
+            {{=T('Сколько Вы хотите оплатить?')}}
+            <input type="text" name="volume"
+                   class='pay_xval'
+                   id='pay_val'
+                   value={{=vars.get("volume_out") or 1}}
+                   onkeyup="recalc(this.value);"
+                   >
+            {{pass}}
+            {{if 'reserve' in vars:}}
+            ({{=T('не более')}}: {{=vars['reserve']}})
+            {{pass}}
+            <br>
+            {{=T('Емайл для уведомлений (не обязательно)')}}:
+            <input type="text" name="email"
+                   class='email'
+                   value={{= so.email and '%s..@..%s' % (so.email[:2], so.email[-3:]) or ''}}
+                   {{if so.email:
+                   ='disabled="disabled"'
+                   pass
+                   }}
+                   >
+            {{if not vars.get('closed'):}}
+            <div id=xcurr_list>
+                <div id="prompt">
+                    {{=T('Выберите криптовалюту которой Вы будете платить')}}:<br>
+                </div>
+                <ul>
+                    {{for row in xcurrs_list:}}
+                    <ol class="ol1">
+                        <div class='ol3'>
+                            <span class='row1 pay_vol'>
+                            </span>
+                            <span>
+                            {{id=row['id']
+                                =IMG(_src=URL('default','download', args=['db', row['icon']]), _width=40, _height=40, _class='lst_icon', _id='lst_icon%s' % id) }}
+                            </span>
+                            <span>
+                                <input type='submit' id='submit{{=id}}'
+                                       onclick="set_xcurr_in('{{=row['abbrev']}}');"
+                                       class='p-ic'
+                                       name=xcurr
+                                       value='{{=row['name']}}'
+                                       size=6
+                                       {{ if row['expired']:}}
+                                       disabled='disabled'
+                                       {{pass}}
+                                       >
+                            </span>
+                            <span class='abbrev hidden'>{{=row['abbrev']}}
+                            </span>
+                            <span class='row1'>
+                                {{if row['price'] and row['price'] != 1:}}
+                                1:{{=round(row['price'],6)}} {{=round(1/row['price'],6)}}:1
+                                {{pass}}
+                            </span>
+                            <span class='price hidden'>{{=row['price']}}
+                            </span>
+                        </div>
+                    </ol>
+                    {{pass}}
+                </ul>
+                <div>
+                    {{=A(IMG(_src=URL('static','images/refresh_256.png'), _width=26, _height=26),
+                    _href=ou_u) }}
+                    <span class='row2'>
+                        {{=T('- обновить курсы и остатки по платежам для валют')}}.<br>
+                        {{=T('*) платить можно по частям и разными криптовалютами, переплата автоматически вернется назад на адрес отправителя')}}.<br>
+                        {{=T('*) курсы обмена будут уточнены после выбора криптовалюты')}}.
+                    </span>
+                </div>
+            </div>
+            {{pass}}
+        </form>
+        {{ back_url = vars.get('back_url')}}
+        {{if back_url:}} {{=A(T('Обратно в магазин'),_href=back_url )}}<br>{{pass}}
+        {{if not vars.get('closed'):}}
+        <br>{{=LOAD('where', 'for_addr.load', vars={ 'shop_order': so.id, }, ajax=True, times=100, timeout=20000,
+        content=IMG(_src=URL('static','images/loading.gif'), _width=48))}}
+        {{pass}}
+    </div>
+    </div>
+    {{pass}}
+
+    <script language="javascript" type="text/javascript">
+
+        function recalc(volume) {
+            //volume = volume.toPrecision(2)
+            //$('#prompt').html(volume);
+            {{if 'reserve' in vars:}}
+            if ( volume > {{=vars['reserve']}} ) {
+                volume = {{=vars['reserve']}};
+                $('#pay_val').val(volume);
+                }
+            {{pass}}
+            var price;
+            var pay_vol;
+            $('ol').each(function(i,o) {
+                price = $(this).find('.price').html();
+                if ( price > 0 ) {
+                    pay_vol = volume/price;
+                    pay_vol = pay_vol.toPrecision(5);
+                    pay_vol = '= ' + pay_vol
+                } else { pay_vol = '---'; }
+                //$(this).find('.pay_vol').html(pay_vol + ' ' +$(this).find('.abbrev').html());
+                $(this).find('.pay_vol').html(pay_vol);
+            });
+        }
+        function set_xcurr_in(name) {
+            $('#xcurr_in').val(name);
+        }
+    </script>
+</BODY>
+{{pass}}
+
+{{include 'web2py_ajax_my.html'}}

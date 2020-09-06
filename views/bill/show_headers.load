@@ -1,0 +1,15 @@
+{{#=BEAUTIFY(response.vars)}}
+{{v = response.vars}}
+{{=v['status']}}<br>
+{{
+to_pay = v.get('to_pay')
+if to_pay != None:
+}}
+{{=v.get('to_pay_label')}}:
+    <input type="text" name="volume"
+       class='pay_xval'
+       value={{=to_pay}}
+       onkeyup="recalc(this.value);"
+       readonly=true
+       >
+{{pass}}

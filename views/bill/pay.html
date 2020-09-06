@@ -1,0 +1,144 @@
+<link rel="shortcut icon" href="{{=URL('static','images/crPay2.ico')}}" type="image/x-icon">
+<link rel="apple-touch-icon" href="{{=URL('static','images/crPay2.png')}}">
+
+{{if not addr:}}
+{{=uri}}
+{{else:}}
+
+<style type="text/css">
+    body {
+        background-color: #666;
+        font-size: 18px;
+    }
+    .block1 {
+        width: 560px;
+        background: #eec;
+        padding: 15px 30px;
+        #padding-right: 10px;
+        #border: solid 1px black;
+    }
+    .pic1 {
+        vertical-align: top;
+        position: relative; /* Относительное позиционирование */
+        top: -5px;
+        #margin-top: 15px;
+        #padding: 5px 0px;
+    }
+    .pic2 {
+        vertical-align: top;
+        position: relative; /* Относительное позиционирование */
+        top: 8px;
+        #margin-top: 10px;
+        #padding: 5px 0px;
+    }
+    .row_url {
+        vertical-align: top;
+        position: relative; /* Относительное позиционирование */
+        top: -1em; /* Смещаем слой вверх */
+    }
+    .row2 {
+        vertical-align: top;
+        #position: relative; /* Относительное позиционирование */
+        #top: 0.5em; /* Смещаем слой вверх */
+    }
+    input[type="submit"] {
+        vertical-align: top;
+        position: relative;
+        top: 0.2em;
+        padding: 4px 1em;
+        height: 2.5em;
+    }
+    input.wallet {
+        width: 24em;
+        height: 3em;
+        cursor: pointer;
+        border-radius: 15px;
+        padding: 4px 1em;
+    }
+    button.uri {
+        #width: 14em;
+        font-size: 20;
+        background-color: #afa;
+        #height: 4em;
+        cursor: pointer;
+        border-radius: 15px;
+        padding: 1em 3em;
+    }
+</style>
+
+{{vars = response.vars }}
+{{so = vars['shop_order']}}
+
+{{if vars.get('gift_mess'):}}{{=vars['gift_mess']}}{{pass}}
+
+{{curr_img=IMG(_src=URL('default','download', args=['db', vars['curr_icon']]), _width=30, _height=30, _class='icon')}}
+{{curr_in_img=IMG(_src=URL('default','download', args=['db', vars['curr_in_icon']]), _width=30, _height=30, _class='icon')}}
+
+<div align="middle">
+    <div align="left" class="block1">
+        {{
+        price = vars.get('price')
+        bill_id = '%s' % so.id
+        if so.secr: bill_id += '.%s' % so.secr
+        ou=A(T('%s') % (so.order_id), _href=URL('bill','show', args=[bill_id]))
+        }}
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td valign="top" align="left" width="124">
+                        {{=A(IMG(_src=URL('static','images/logo1.png'), _width=120), _href=URL('default','home'), _target="blank")}}
+                    </td>
+                    <td valign="top" align="center" width="60%">
+                        {{=T('Оплата заказа')}}
+                        {{=ou}}<br>
+                        {{if price:}}
+                        {{=T('на сумму ')}} {{=so.price}}
+                        {{else:}}
+                        {{=T('в валюте')}}
+                        {{pass}}
+                {{=IMG(_src=URL('default','download', args=['db', vars['curr_icon']]), _width=30, _height=30, _class='lst_icon')}}
+                    </td>
+                    <td valign="top" align="right" width="130">
+                        {{=T('для магазина:')}}<br>
+                        {{=vars.get('shop_url') or '?'}}
+                    </td>
+                </tr>
+            </table>
+
+        {{if so.email:
+        =T('Емайл для уведомлений: %s..@..%s') % (so.email[:2], so.email[-3:])
+        else:
+        =T('(без уведомлений по емайл)')
+        pass}}
+<br>{{=T('Оплатите')}}: {{=vars['volume_in']}}<span class='pic2'>{{=curr_in_img}}</span> (*{{=T('прямой курс')}}:{{=vars['best_rate']}}, *{{=T('обратный курс')}}: {{=vars['best_rate_rev']}})
+<div align="middle">
+    <br> {{=uri}}<br>
+<br>{{=T('или')}}
+</div>
+<form action="{{=URL('where', 'index')}}" method="post">
+<br>{{=T("Скопируйте адрес (двойной клик по адресу для выделения) и вставьте его в платеж на вашем кошельке")}}:
+<br><input name="addr" value="{{=addr}}" class="wallet" readonly>
+    {{ back_url = vars.get('back_url')}}
+    {{if back_url:}}
+    <br>
+    {{=A(T('Обратно в магазин'),_href=back_url )}}<br>
+    {{pass}}
+    <br>{{=LOAD('where', 'for_addr.load', vars={'addr': addr, 'shop_order': so.id, 'shop': vars['shop_id']}, ajax=True, times=100, timeout=20000,
+    content=IMG(_src=URL('static','images/loading.gif'), _width=48))}}
+</form>
+<br>*{{=T('Данный курс будет заморожен для Вас на 20 минут для объёма криптовалюты не больше указанного.')}} 
+        {{=T('Поэтому обязательно проверьте закрытие счета после зачисления Ваших платежей.')}}
+<br><br>
+
+<form enctype="multipart/form-data" action="{{=URL('show', args=[bill_id])}}" method="post">
+ <input type='submit'
+            class='my_bu-tton lst_but-ton '
+            value='{{=T('Назад')}}'
+            size=6
+     >
+</form>
+    </div>
+</div>
+
+{{pass}}
+
+{{include 'web2py_ajax_my.html'}}
